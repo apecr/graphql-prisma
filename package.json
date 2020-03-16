@@ -4,7 +4,10 @@
   "description": "graphql-prisma from https://udemy.com/graphql-bootcamp/",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require babel-core/register -u tdd",
+    "start": "babel-node src/index.js",
+    "dev": "nodemon src/index.js --ext js,graphql --exec babel-node",
+    "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test"
   },
   "repository": {
     "type": "git",
@@ -18,5 +21,22 @@
   "bugs": {
     "url": "https://github.com/apecr/graphql-prisma/issues"
   },
-  "homepage": "https://github.com/apecr/graphql-prisma#readme"
+  "homepage": "https://github.com/apecr/graphql-prisma#readme",
+  "dependencies": {
+    "apollo-server": "^2.1.0",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "graphql": "^14.0.2",
+    "graphql-yoga": "^1.16.7",
+    "prisma-binding": "^2.3.16",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.7",
+    "nyc": "^15.0.0"
+  }
 }
