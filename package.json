@@ -1,0 +1,22 @@
+{
+  "name": "graphql-prisma",
+  "version": "1.0.0",
+  "description": "graphql-prisma from https://udemy.com/graphql-bootcamp/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apecr/graphql-prisma.git"
+  },
+  "keywords": [
+    "npm-library"
+  ],
+  "author": "Alberto Eyo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/apecr/graphql-prisma/issues"
+  },
+  "homepage": "https://github.com/apecr/graphql-prisma#readme"
+}
