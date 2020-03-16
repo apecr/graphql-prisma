@@ -7,7 +7,8 @@
     "test": "mocha --require babel-core/register -u tdd",
     "start": "babel-node src/index.js",
     "dev": "nodemon src/index.js --ext js,graphql --exec babel-node",
-    "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test"
+    "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
+    "get-schema": "graphql get-schema -p prisma"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "graphql": "^14.0.2",
+    "graphql-cli": "^3.0.14",
     "graphql-yoga": "^1.16.7",
     "prisma-binding": "^2.3.16",
     "uuid": "^3.3.2"
