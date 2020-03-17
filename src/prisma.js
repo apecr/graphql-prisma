@@ -66,12 +66,36 @@ const createPostForUserAndRetrieveUserInfo = async({ authorId, data }) => {
   return user
 }
 
-createPostForUserAndRetrieveUserInfo({
-  authorId: 'ck7ugkybg004o08792rjcs7pf',
+const updatePostForUserAndRetrieveUserInfo = async({ postId, data}) => {
+  const user = await prisma.mutation.updatePost({
+    where: {
+      id: postId
+    },
+    data
+  }, '{ author { id } }')
+  return await prisma.query.user({
+    where: {
+      id: user.author.id
+    }
+  }, '{ id name email posts { id title published } }')
+}
+
+updatePostForUserAndRetrieveUserInfo({
+  postId: 'ck7vumlg800ja087919y946cr',
   data: {
-    title: 'Great books to read',
-    body: 'War of art',
-    published: true,
+    title: 'Great books to read II',
+    body: 'War of art, Crimen y Castigo',
+    published: false
   }
 }).then(user => JSON.stringify(user, null, 2))
   .then(console.log)
+
+// createPostForUserAndRetrieveUserInfo({
+//   authorId: 'ck7ugkybg004o08792rjcs7pf',
+//   data: {
+//     title: 'Great books to read',
+//     body: 'War of art',
+//     published: true,
+//   }
+// }).then(user => JSON.stringify(user, null, 2))
+//   .then(console.log)
