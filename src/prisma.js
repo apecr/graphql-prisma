@@ -1,5 +1,5 @@
 import { Prisma } from 'prisma-binding'
-const colors = require('colors')
+import colors from 'colors'
 
 const prisma = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
@@ -42,7 +42,6 @@ const updatePostForUserAndRetrieveUserInfo = async({ postId, data }) => {
 }
 
 updatePostForUserAndRetrieveUserInfo({
-
   postId: 'ck7uoqcf800ig0879tkf666a0',
 
   // postId: '12345',
@@ -50,8 +49,8 @@ updatePostForUserAndRetrieveUserInfo({
     title: '102 Graphql',
     published: true
   }
-}).then(data => console.log(JSON.stringify(data.author, null, 2).green))
-  .catch(error => console.error(error.message.red))
+}).then(data => console.log(colors.green(JSON.stringify(data.author, null, 2))))
+  .catch(error => console.error(colors.red(error.message)))
 
 // createPostForUserAndRetrieveUserInfo({
 //   authorId: 'ck7ul9gwd00cx0879qnf872yo',
