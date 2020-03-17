@@ -41,16 +41,16 @@ const updatePostForUserAndRetrieveUserInfo = async({ postId, data }) => {
   }, '{ author { id name email posts { id title published } } }')
 }
 
-updatePostForUserAndRetrieveUserInfo({
-  postId: 'ck7uoqcf800ig0879tkf666a0',
+// updatePostForUserAndRetrieveUserInfo({
+//   postId: 'ck7uoqcf800ig0879tkf666a0',
 
-  // postId: '12345',
-  data: {
-    title: '102 Graphql',
-    published: true
-  }
-}).then(data => console.log(colors.green(JSON.stringify(data.author, null, 2))))
-  .catch(error => console.error(colors.red(error.message)))
+//   // postId: '12345',
+//   data: {
+//     title: '102 Graphql',
+//     published: true
+//   }
+// }).then(data => console.log(colors.green(JSON.stringify(data.author, null, 2))))
+//   .catch(error => console.error(colors.red(error.message)))
 
 // createPostForUserAndRetrieveUserInfo({
 //   authorId: 'ck7ul9gwd00cx0879qnf872yo',

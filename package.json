@@ -8,7 +8,9 @@
     "start": "babel-node src/index.js",
     "dev": "nodemon src/index.js --ext js,graphql --exec babel-node",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
-    "get-schema": "graphql get-schema -p prisma"
+    "get-schema": "graphql get-schema -p prisma",
+    "get-schema-reviews": "graphql get-schema -p prisma-review-website",
+    "functional-test": "babel-node test/review-website.test.js"
   },
   "repository": {
     "type": "git",

@@ -7,6 +7,14 @@
           "default": "http://localhost:4466"
         }
       }
+    },
+    "prisma-review-website": {
+      "schemaPath": "src/generated/prisma-review-website.graphql",
+      "extensions": {
+        "endpoints": {
+          "default": "http://localhost:4466/reviews/default"
+        }
+      }
     }
   }
 }
