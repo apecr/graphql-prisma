@@ -1,4 +1,5 @@
 import { Prisma } from 'prisma-binding'
+const colors = require('colors')
 
 const prisma = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
@@ -26,29 +27,42 @@ const createPostForUserAndRetrieveUserInfo = async({ authorId, data }) => {
 }
 
 const updatePostForUserAndRetrieveUserInfo = async({ postId, data }) => {
-  const user = await prisma.mutation.updatePost({
+  const postExist = await prisma.exists.Post({ id: postId })
+
+  if (!postExist) {
+    throw new Error('Post not found')
+  }
+
+  return await prisma.mutation.updatePost({
     where: {
       id: postId
     },
     data
-  }, '{ author { id } }')
-  return await prisma.query.user({
-    where: {
-      id: user.author.id
-    }
-  }, '{ id name email posts { id title published } }')
+  }, '{ author { id name email posts { id title published } } }')
 }
 
-createPostForUserAndRetrieveUserInfo({
-  authorId: 'ck7ul9gwd00cx0879qnf872yo',
+updatePostForUserAndRetrieveUserInfo({
+
+  postId: 'ck7uoqcf800ig0879tkf666a0',
+
+  // postId: '12345',
   data: {
-    title: '',
-    body: '',
-    published: false
+    title: '102 Graphql',
+    published: true
   }
-}).then(user => JSON.stringify(user, null, 2))
-  .then(console.log)
-  .catch(console.error)
+}).then(data => console.log(JSON.stringify(data.author, null, 2).green))
+  .catch(error => console.error(error.message.red))
+
+// createPostForUserAndRetrieveUserInfo({
+//   authorId: 'ck7ul9gwd00cx0879qnf872yo',
+//   data: {
+//     title: '',
+//     body: '',
+//     published: false
+//   }
+// }).then(user => JSON.stringify(user, null, 2))
+//   .then(console.log)
+//   .catch(console.error)
 
 // createPostForUserAndRetrieveUserInfo({
 //   authorId: '122345',

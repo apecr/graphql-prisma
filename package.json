@@ -27,6 +27,7 @@
     "apollo-server": "^2.1.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "colors": "^1.4.0",
     "graphql": "^14.0.2",
     "graphql-cli": "^3.0.14",
     "graphql-yoga": "^1.16.7",
