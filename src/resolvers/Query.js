@@ -1,19 +1,23 @@
-import {matchAgainstSeveralElements} from './../utils'
+import { matchAgainstSeveralElements } from './../utils'
 
 const Query = {
-  users: (parent, { query }, { db, prisma }, info) => {
-    return prisma.query.users(null, info)
+  users: (parent, { query }, { prisma }, info) => {
+    const opArgs = {}
 
-    // return query
-    //   ? db.users.filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
-    //   : db.users
+    if (query) {
+      opArgs.where = {
+        OR: [{
+          name_contains: query
+        }, {
+          email_contains: query
+        }]
+      }
+    }
+
+    return prisma.query.users(opArgs, info)
   },
-  posts: (parent, { query }, { db, prisma }, info) =>
+  posts: (parent, { query }, { prisma }, info) =>
     prisma.query.posts(null, info),
-
-  // query
-  //   ? db.posts.filter(post => matchAgainstSeveralElements([post.title, post.body], query))
-  //   : db.posts,
   me: _ => ({
     id: '1234abdcs',
     name: 'Alberto Eyo',
@@ -29,4 +33,4 @@ const Query = {
   comments: (parent, { query }, { db }, info) => db.comments
 }
 
-export {Query as default}
+export { Query as default }
