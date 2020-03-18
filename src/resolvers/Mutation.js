@@ -1,36 +1,27 @@
+/* eslint-disable new-cap */
 import uuidv4 from 'uuid/v4'
 import { checkElementsFromArrayAndThrowError, checkUserId } from './../utils'
 
 const Mutation = {
-  createUser: (parent, { data }, { db }, info) => {
-    const { name, email, age = 0 } = data
-    checkElementsFromArrayAndThrowError(db.users, user => user.email === email, 'Email taken', true)
-    const newUser = {
-      id: uuidv4(),
-      name,
-      email,
-      age
+  createUser: async(parent, { data }, { prisma }, info) => {
+    const emailTaken = await prisma.exists.User({ email: data.email })
+    if (emailTaken) {
+      throw new Error('Email taken')
     }
-    db.users.push(newUser)
-    return newUser
+    return await prisma.mutation.createUser(
+      {
+        data
+      },
+      info
+    )
   },
-  deleteUser: (parent, { id }, { db }) => {
-    const userIndex = db.users.findIndex(user => user.id === id)
-    if (userIndex === -1) {
-      throw new Error('User not found')
+  deleteUser: async(parent, { id }, { prisma }, info) => {
+    const existUser = await prisma.exists.User({ id })
+    if (!existUser) {
+      throw new Error('User does not exist')
     }
-    const deletedUsers = db.users.splice(userIndex, 1)
 
-    db.posts = db.posts.filter(post => {
-      const match = post.author === id
-      if (match) {
-        db.comments = db.comments.filter(comment => comment.post !== post.id)
-      }
-      db.comments = db.comments.filter(comment => comment.author === id)
-      return !match
-    })
-
-    return deletedUsers[0]
+    return prisma.mutation.deleteUser({where: { id }}, info)
   },
   updateUser: (parent, { id, data }, { db }, info) => {
     const userToUpdate = db.users.find(user => user.id === id)
@@ -78,9 +69,11 @@ const Mutation = {
     return deletedPost
   },
   createPost: (parent, { post }, { db, pubsub }) => {
-    checkElementsFromArrayAndThrowError(db.users,
+    checkElementsFromArrayAndThrowError(
+      db.users,
       checkUserId(post.author),
-      'User does not exist')
+      'User does not exist'
+    )
     const newPost = { ...post, id: uuidv4() }
     db.posts.push(newPost)
     if (newPost.published === true) {
@@ -142,15 +135,21 @@ const Mutation = {
   },
   createComment: (parent, { comment }, { db, pubsub }) => {
     const { text, author, post } = comment
-    checkElementsFromArrayAndThrowError(db.users,
+    checkElementsFromArrayAndThrowError(
+      db.users,
       checkUserId(author),
-      'User does not exist')
-    checkElementsFromArrayAndThrowError(db.posts,
+      'User does not exist'
+    )
+    checkElementsFromArrayAndThrowError(
+      db.posts,
       postA => postA.id === post && postA.published === true,
-      'Post does not exist or is not published')
+      'Post does not exist or is not published'
+    )
     const newComment = {
       id: uuidv4(),
-      text, author, post
+      text,
+      author,
+      post
     }
     db.comments.push(newComment)
     pubsub.publish(`comment ${post}`, {
@@ -179,7 +178,6 @@ const Mutation = {
     })
 
     return commentToUpdate
-
   },
   deleteComment: (parent, { id }, { db, pubsub }) => {
     const commentIndex = db.comments.findIndex(comment => comment.id === id)
