@@ -49,52 +49,13 @@ const Mutation = {
       }
     }, info)
   },
-  updatePost: (parent, { id, data }, { db, pubsub }, info) => {
-    const postToUpdate = db.posts.find(post => post.id === id)
-    const originalPost = { ...postToUpdate }
-
-    if (!postToUpdate) {
-      throw new Error('Post not found')
-    }
-
-    if (typeof data.title === 'string') {
-      postToUpdate.title = data.title
-    }
-
-    if (typeof data.body === 'string') {
-      postToUpdate.body = data.body
-    }
-
-    if (typeof data.published === 'boolean') {
-      postToUpdate.published = data.published
-      if (originalPost.published && !postToUpdate.published) {
-        // deleted
-        pubsub.publish('post', {
-          post: {
-            mutation: 'DELETED',
-            data: originalPost
-          }
-        })
-      } else if (!originalPost.published && postToUpdate.published) {
-        // created
-        pubsub.publish('post', {
-          post: {
-            mutation: 'CREATED',
-            data: postToUpdate
-          }
-        })
+  updatePost: (parent, { id, data }, { prisma }, info) => {
+    return prisma.mutation.updatePost({
+      data,
+      where: {
+        id
       }
-    } else if (postToUpdate.published) {
-      // updated
-      pubsub.publish('post', {
-        post: {
-          mutation: 'UPDATED',
-          data: postToUpdate
-        }
-      })
-    }
-
-    return postToUpdate
+    }, info)
   },
   createComment: (parent, { comment }, { db, pubsub }) => {
     const { text, author, post } = comment
