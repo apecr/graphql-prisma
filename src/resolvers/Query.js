@@ -1,5 +1,3 @@
-import { matchAgainstSeveralElements } from './../utils'
-
 const Query = {
   users: (parent, { query }, { prisma }, info) => {
     const opArgs = {}
@@ -40,7 +38,7 @@ const Query = {
     body: 'loren ipsum',
     published: false
   }),
-  comments: (parent, { query }, { db }, info) => db.comments
+  comments: (parent, { query }, { prisma }, info) => prisma.query.comments(null, info)
 }
 
 export { Query as default }
