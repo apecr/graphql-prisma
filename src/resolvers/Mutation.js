@@ -57,65 +57,33 @@ const Mutation = {
       }
     }, info)
   },
-  createComment: (parent, { comment }, { db, pubsub }) => {
-    const { text, author, post } = comment
-    checkElementsFromArrayAndThrowError(
-      db.users,
-      checkUserId(author),
-      'User does not exist'
-    )
-    checkElementsFromArrayAndThrowError(
-      db.posts,
-      postA => postA.id === post && postA.published === true,
-      'Post does not exist or is not published'
-    )
-    const newComment = {
-      id: uuidv4(),
-      text,
-      author,
-      post
-    }
-    db.comments.push(newComment)
-    pubsub.publish(`comment ${post}`, {
-      comment: {
-        mutation: 'CREATED',
-        data: newComment
+  createComment: (parent, { comment }, { prisma }, info) => {
+    return prisma.mutation.createComment({
+      data: {
+        ...comment,
+        author: {
+          connect: {
+            id: comment.author
+          }
+        },
+        post: {
+          connect: {
+            id: comment.post
+          }
+        }
       }
-    })
-    return newComment
+    }, info)
   },
-  updateComment: (parent, { id, data }, { db, pubsub }, info) => {
-    const commentToUpdate = db.comments.find(comment => comment.id === id)
-
-    if (!commentToUpdate) {
-      throw new Error('Comment not found')
-    }
-
-    if (typeof data.text === 'string') {
-      commentToUpdate.text = data.text
-    }
-    pubsub.publish(`comment ${commentToUpdate.post}`, {
-      comment: {
-        mutation: 'UPDATED',
-        data: commentToUpdate
-      }
-    })
-
-    return commentToUpdate
+  deleteComment: (parent, { id }, { prisma }, info) => {
+    return prisma.mutation.deleteComment({
+      where: {id}
+    }, info)
   },
-  deleteComment: (parent, { id }, { db, pubsub }) => {
-    const commentIndex = db.comments.findIndex(comment => comment.id === id)
-
-    if (commentIndex === -1) {
-      throw new Error('Comment not found')
-    }
-    pubsub.publish(`comment ${db.comments[commentIndex].post}`, {
-      comment: {
-        mutation: 'DELETED',
-        data: db.comments[commentIndex]
-      }
-    })
-    return db.comments.splice(commentIndex, 1)[0]
+  updateComment: (parent, { id, data }, { prisma }, info) => {
+    return prisma.mutation.updateComment({
+      where: {id},
+      ...data
+    }, info)
   }
 }
 
