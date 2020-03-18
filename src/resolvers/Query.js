@@ -1,15 +1,19 @@
 import {matchAgainstSeveralElements} from './../utils'
 
 const Query = {
-  users: (parent, { query }, { db }, info) => {
-    return query
-      ? db.users.filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
-      : db.users
+  users: (parent, { query }, { db, prisma }, info) => {
+    return prisma.query.users(null, info)
+
+    // return query
+    //   ? db.users.filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
+    //   : db.users
   },
-  posts: (parent, { query }, { db }, info) =>
-    query
-      ? db.posts.filter(post => matchAgainstSeveralElements([post.title, post.body], query))
-      : db.posts,
+  posts: (parent, { query }, { db, prisma }, info) =>
+    prisma.query.posts(null, info),
+
+  // query
+  //   ? db.posts.filter(post => matchAgainstSeveralElements([post.title, post.body], query))
+  //   : db.posts,
   me: _ => ({
     id: '1234abdcs',
     name: 'Alberto Eyo',
