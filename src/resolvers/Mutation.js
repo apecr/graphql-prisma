@@ -23,30 +23,41 @@ const Mutation = {
 
     return prisma.mutation.deleteUser({where: { id }}, info)
   },
-  updateUser: (parent, { id, data }, { db }, info) => {
-    const userToUpdate = db.users.find(user => user.id === id)
+  updateUser: (parent, { id, data }, { prisma }, info) => {
 
-    if (!userToUpdate) {
-      throw new Error('User not found')
-    }
-
-    if (typeof data.email === 'string') {
-      const emailTaken = db.users.some(user => user.email === data.email)
-      if (emailTaken) {
-        throw new Error('Email in use')
+    return prisma.mutation.updateUser({
+      data,
+      where: { id }
+    }, info)
+  },
+  createPost: (parent, { post }, { prisma }, info) => {
+    return prisma.mutation.createPost({
+      data: {
+        ...post,
+        author: {
+          connect: {
+            id: post.author
+          }
+        }
       }
-      userToUpdate.email = data.email
-    }
+    }, info)
 
-    if (typeof data.name === 'string') {
-      userToUpdate.name = data.name
-    }
-
-    if (typeof data.age !== undefined) {
-      userToUpdate.age = data.age
-    }
-
-    return userToUpdate
+    // checkElementsFromArrayAndThrowError(
+    //   db.users,
+    //   checkUserId(post.author),
+    //   'User does not exist'
+    // )
+    // const newPost = { ...post, id: uuidv4() }
+    // db.posts.push(newPost)
+    // if (newPost.published === true) {
+    //   pubsub.publish('post', {
+    //     post: {
+    //       mutation: 'CREATED',
+    //       data: newPost
+    //     }
+    //   })
+    // }
+    // return newPost
   },
   deletePost: (parent, { id }, { db, pubsub }) => {
     const postIndex = db.posts.findIndex(post => post.id === id)
@@ -67,24 +78,6 @@ const Mutation = {
     }
 
     return deletedPost
-  },
-  createPost: (parent, { post }, { db, pubsub }) => {
-    checkElementsFromArrayAndThrowError(
-      db.users,
-      checkUserId(post.author),
-      'User does not exist'
-    )
-    const newPost = { ...post, id: uuidv4() }
-    db.posts.push(newPost)
-    if (newPost.published === true) {
-      pubsub.publish('post', {
-        post: {
-          mutation: 'CREATED',
-          data: newPost
-        }
-      })
-    }
-    return newPost
   },
   updatePost: (parent, { id, data }, { db, pubsub }, info) => {
     const postToUpdate = db.posts.find(post => post.id === id)
