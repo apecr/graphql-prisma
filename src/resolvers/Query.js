@@ -3,7 +3,6 @@ import { matchAgainstSeveralElements } from './../utils'
 const Query = {
   users: (parent, { query }, { prisma }, info) => {
     const opArgs = {}
-
     if (query) {
       opArgs.where = {
         OR: [{
@@ -16,8 +15,19 @@ const Query = {
 
     return prisma.query.users(opArgs, info)
   },
-  posts: (parent, { query }, { prisma }, info) =>
-    prisma.query.posts(null, info),
+  posts: (parent, { query }, { prisma }, info) => {
+    const opArgs = {}
+    if (query) {
+      opArgs.where = {
+        OR: [{
+          title_contains: query
+        }, {
+          body_contains: query
+        }]
+      }
+    }
+    return prisma.query.posts(opArgs, info)
+  },
   me: _ => ({
     id: '1234abdcs',
     name: 'Alberto Eyo',
