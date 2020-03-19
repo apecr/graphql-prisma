@@ -4,6 +4,20 @@ import jwt from 'jsonwebtoken'
 import getUserId from '../utils/getUserId'
 import { SECRET } from './../utils/utils'
 
+const  checkPostForUserId = async(request, prisma, id, errorMessage) => {
+  const userId = getUserId(request)
+  const postExist = await prisma.exists.Post({
+    id,
+    author: {
+      id: userId
+    }
+  })
+  if (!postExist) {
+    throw new Error(errorMessage)
+  }
+  return userId
+}
+
 const Mutation = {
   login: async(parent, { data }, { prisma }, info) => {
     const user = await prisma.query.user({
@@ -77,17 +91,7 @@ const Mutation = {
     }, info)
   },
   deletePost: async(parent, { id }, { prisma, request }, info) => {
-    const userId = getUserId(request)
-    const postExist = await prisma.exists.Post({
-      id,
-      author: {
-        id: userId
-      }
-    })
-
-    if (!postExist) {
-      throw new Error('Unable to delete Post')
-    }
+    await checkPostForUserId(request, prisma, id, 'Unable to delete the post')
 
     return prisma.mutation.deletePost({
       where: {
@@ -96,17 +100,7 @@ const Mutation = {
     }, info)
   },
   updatePost: async(parent, { id, data }, { prisma, request }, info) => {
-    const userId = getUserId(request)
-    const postExist = await prisma.exists.Post({
-      id,
-      author: {
-        id: userId
-      }
-    })
-
-    if (!postExist) {
-      throw new Error('Unable to update Post')
-    }
+    await checkPostForUserId(request, prisma, id, 'Unable to update the post')
     return prisma.mutation.updatePost({
       data,
       where: {
