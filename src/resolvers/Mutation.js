@@ -2,7 +2,21 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+const dummy = async() => {
+  const email = 'alberto@gmail.com'
+  const password = 'Red12345'
+
+  const hashedPassword = '$2a$10$YPXWpUwy9I9djHKZW6WVt.AFofLBWVIXA629xUsCmwTll8v3xWxhi'
+  const isMatch = await bcrypt.compare(password, hashedPassword)
+  console.log(isMatch)
+}
+
+dummy()
+
 const Mutation = {
+  login: (parent, args, ctx, info) => {
+    return {}
+  },
   createUser: async(parent, { data }, { prisma }, info) => {
     if (data.password.length < 8) {
       throw new Error('Password must be 8 characters or longer')
