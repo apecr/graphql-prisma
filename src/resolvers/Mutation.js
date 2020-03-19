@@ -1,19 +1,29 @@
 /* eslint-disable new-cap */
-import uuidv4 from 'uuid/v4'
-import { checkElementsFromArrayAndThrowError, checkUserId } from './../utils'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 const Mutation = {
   createUser: async(parent, { data }, { prisma }, info) => {
+    if (data.password.length < 8) {
+      throw new Error('Password must be 8 characters or longer')
+    }
+    const hashPassword = await bcrypt.hash(data.password, 10)
     const emailTaken = await prisma.exists.User({ email: data.email })
     if (emailTaken) {
       throw new Error('Email taken')
     }
-    return await prisma.mutation.createUser(
+    const user =  await prisma.mutation.createUser(
       {
-        data
-      },
-      info
-    )
+        data: {
+          ...data,
+          password: hashPassword
+        }
+      })
+    return {
+      user,
+      token: jwt.sign({userId: user.id}, 'thisisasecret')
+    }
+
   },
   deleteUser: async(parent, { id }, { prisma }, info) => {
     const existUser = await prisma.exists.User({ id })
