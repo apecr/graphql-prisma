@@ -20,11 +20,12 @@ const server = new GraphQLServer({
     Mutation,
     Subscription
   },
-  context: {
+  context: (request) => ({
+    request,
     'db': database.db,
     pubsub,
     prisma
-  }
+  })
 })
 
 server.start(_ => console.log('server is running'))
