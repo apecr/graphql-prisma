@@ -28,12 +28,13 @@ const Query = {
     }
     return prisma.query.posts(opArgs, info)
   },
-  me: _ => ({
-    id: '1234abdcs',
-    name: 'Alberto Eyo',
-    email: 'albert@example.com',
-    age: 45
-  }),
+  me: (parent, args, { prisma, request }, info) => {
+    const userId = getUserId(request)
+    return prisma.query.user({
+      where: { id: userId }
+    }, info)
+
+  },
   post: async(parent, args, { prisma, request }, info) => {
     const userId = getUserId(request, false)
     const posts = await prisma.query.posts({
