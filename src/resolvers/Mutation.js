@@ -1,8 +1,7 @@
 /* eslint-disable new-cap */
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 import getUserId from '../utils/getUserId'
-import { SECRET } from './../utils/utils'
+import generateToken from './../utils/generateToken'
 
 const checkPost = async(id, userId, prisma, errorMessage) => {
   const postExist = await prisma.exists.Post({
@@ -58,7 +57,7 @@ const Mutation = {
 
     return {
       user,
-      token: jwt.sign({userId: user.id}, SECRET)
+      token: generateToken(user.id)
     }
   },
   createUser: async(parent, { data }, { prisma }, info) => {
@@ -79,7 +78,7 @@ const Mutation = {
       })
     return {
       user,
-      token: jwt.sign({userId: user.id}, SECRET)
+      token: generateToken(user.id)
     }
 
   },
