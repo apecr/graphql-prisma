@@ -133,6 +133,10 @@ const Mutation = {
   },
   createComment: async(parent, { comment }, { prisma, request }, info) => {
     const userId = getUserId(request)
+    const postExist = await prisma.exists.Post({ id: comment.post, published: true })
+    if (!postExist) {
+      throw new Error('Post not published')
+    }
     return prisma.mutation.createComment({
       data: {
         ...comment,
