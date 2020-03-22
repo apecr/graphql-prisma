@@ -83,12 +83,12 @@ enum MutationType {
 }
 
 type Query {
-  users(query: String, first: Int, skip: Int): [User!]!
-  posts(query: String, first: Int, skip: Int): [Post!]!
-  comments: [Comment!]!
+  users(query: String, first: Int, skip: Int, after: String): [User!]!
+  posts(query: String, first: Int, skip: Int, after: String): [Post!]!
+  comments(first: Int, skip: Int, after: String): [Comment!]!
+  myPosts(query: String, first: Int, skip: Int, after: String): [Post!]!
   me: User!
   post(id: ID!): Post!
-  myPosts(query: String): [Post!]!
 }
 
 type Mutation{
