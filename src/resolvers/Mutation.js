@@ -124,6 +124,18 @@ const Mutation = {
   },
   updatePost: async(parent, { id, data }, { prisma, request }, info) => {
     await checkElementForUserId(request, prisma, id, 'Unable to update the post', 'post')
+    const previousPostPublished = await prisma.exists.Post({ id, published: true})
+    if (previousPostPublished && data.published === false) {
+      const numberOfDeleteComments = await prisma.mutation.deleteManyComments({
+        where: {
+          post: {
+            id
+          }
+        }
+      })
+      console.log(JSON.stringify(numberOfDeleteComments, null, 2))
+      console.log(`Deleting ${numberOfDeleteComments.count} comments`)
+    }
     return prisma.mutation.updatePost({
       data,
       where: {
