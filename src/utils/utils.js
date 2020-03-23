@@ -15,7 +15,7 @@ const getPost = (parent, args, {db}) => db.posts.find(post => post.id === parent
 const getComments = (parent, args, {db}) => db.comments.filter(comment => comment.author === parent.id)
 const getCommentsFromPost = (parent, args, {db}) => db.comments.filter(comment => comment.post === parent.id)
 const checkUserId = author => user => user.id === author
-const SECRET = 'thisissecret'
+const SECRET = process.env.JWT_SECRET
 
 
 export {
