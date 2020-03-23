@@ -4,7 +4,7 @@ import colors from 'colors'
 
 const prisma = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
-  endpoint: 'http://localhost:4466',
+  endpoint: process.env.PRISMA_ENDPOINT,
   secret: 'thisismysupersecrettext',
   fragmentReplacements
 })
