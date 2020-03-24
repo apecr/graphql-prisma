@@ -22,4 +22,5 @@ test('Should reject password that contains the word password', () => {
 
 test('Should correctly validate a correct password', () => {
   expect(isValidPassword('red12345')).toBe(true)
+  expect(isValidPassword('red12345')).toBe(true)
 })
