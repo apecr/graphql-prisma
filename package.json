@@ -9,7 +9,7 @@
     "heroku-postbuild": "babel src --out-dir dist --copy-files",
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov npm test",
-    "get-schema": "graphql get-schema -p prisma",
+    "get-schema": "graphql get-schema -p prisma --dotenv config/dev.env",
     "get-schema-reviews": "graphql get-schema -p prisma-review-website",
     "functional-test": "babel-node test/review-website.test.js"
   },
