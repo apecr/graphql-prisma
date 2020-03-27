@@ -2,48 +2,14 @@
 /* eslint-env jest */
 
 import 'cross-fetch/polyfill'
-import ApolloBoost, { gql } from 'apollo-boost'
+import { gql } from 'apollo-boost'
 import prisma from '../src/prisma'
-import bcrypt from 'bcryptjs'
+import seedDatabase from './utils/seedDatabase'
+import getClient from './utils/getClient'
 
-const client = new ApolloBoost({
-  uri: 'http://localhost:4000'
-})
+const client = getClient()
 
-const posts = [
-  {
-    title: 'First test post',
-    body: 'Dummy body for the first test from Jen',
-    published: true
-  }, {
-    title: 'Second test post',
-    body: 'Dummy body for the first test from Jen (the draft)',
-    published: false
-  }]
-
-beforeEach(async() => {
-  await prisma.mutation.deleteManyPosts()
-  await prisma.mutation.deleteManyComments()
-  await prisma.mutation.deleteManyUsers()
-
-  const jenUser = await prisma.mutation.createUser({
-    data: {
-      name: 'Jen',
-      email: 'jes@example.com',
-      password: bcrypt.hashSync('Red12345')
-    }
-  })
-
-  const postsCreated = await Promise.all(posts.map(post => {
-    post.author = {
-      connect: {id: jenUser.id}
-    }
-    return prisma.mutation.createPost({
-      data: { ...post}
-    }, '{id title}')
-  }))
-
-})
+beforeEach(seedDatabase)
 
 test('Should create a new user', async() => {
   const createUser = gql`
@@ -83,22 +49,6 @@ test('Should expose public author profiles', async() => {
   expect(response.data.users.length).toBe(1)
   expect(response.data.users[0].email).toBe(null)
   expect(response.data.users[0].name).toBe('Jen')
-})
-
-test('Should return all the public posts', async() => {
-  const getPosts = gql`
-    query{
-      posts{
-        id
-        title
-        body
-        published
-      }
-    }
-  `
-  const postsResponse = await client.query({ query: getPosts })
-  expect(postsResponse.data.posts.length).toBe(1)
-  expect(postsResponse.data.posts[0].published).toBe(true)
 })
 
 test('Should not login with bad credentials', async() => {
