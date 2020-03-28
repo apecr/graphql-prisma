@@ -39,8 +39,5 @@ test('Should get all the posts from the userOne', async() => {
 
   const authClient = getClient(userOne.jwt)
   const { data } = await authClient.query({ query: getMyPosts })
-
-  console.log(data)
-
-
+  expect(data.myPosts.length).toBe(2)
 })
