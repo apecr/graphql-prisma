@@ -96,8 +96,8 @@ test('Should fetch user profile', async() => {
     }
   `
 
-  const { data } = await client.query({ query: getProfile })
-  expect(data.id).toBe(userOne.user.id)
-  expect(data.name).toBe(userOne.user.name)
-  expect(data.email).toBe(userOne.user.email)
+  const { data } = await authClient.query({ query: getProfile })
+  expect(data.me.id).toBe(userOne.user.id)
+  expect(data.me.name).toBe(userOne.user.name)
+  expect(data.me.email).toBe(userOne.user.email)
 })

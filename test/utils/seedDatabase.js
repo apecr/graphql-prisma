@@ -33,7 +33,7 @@ const seedDatabase = async() => {
   userOne.user = await prisma.mutation.createUser({
     data: userOne.input
   })
-  userOne.token = jwt.sign({ userId: userOne.user.id }, process.env.JWT_SECRET)
+  userOne.jwt = jwt.sign({ userId: userOne.user.id }, process.env.JWT_SECRET)
 
   const postsCreated = await Promise.all(posts.map(post => {
     post.author = {
@@ -43,6 +43,7 @@ const seedDatabase = async() => {
       data: { ...post}
     }, '{id title}')
   }))
+  return postsCreated
 
 }
 
