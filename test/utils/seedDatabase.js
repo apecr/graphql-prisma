@@ -2,7 +2,7 @@ import prisma from './../../src/prisma'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const posts = [
+let posts = [
   {
     title: 'First test post',
     body: 'Dummy body for the first test from Jen',
@@ -12,6 +12,9 @@ const posts = [
     body: 'Dummy body for the first test from Jen (the draft)',
     published: false
   }]
+
+let testPosts = []
+let testComments = []
 
 const userOne = {
   input: {
@@ -23,28 +26,73 @@ const userOne = {
   jwt: undefined
 }
 
+const userTwo = {
+  input: {
+    name: 'San',
+    email: 'san@example.com',
+    password: bcrypt.hashSync('Red12345')
+  },
+  user: undefined,
+  jwt: undefined
+}
+
+const comments = [{
+  text: 'First test comment'
+}, {
+  text: 'Second test comment'
+}]
+
+const createUser = async(user) => {
+  user.user = await prisma.mutation.createUser({
+    data: user.input
+  })
+  user.jwt = jwt.sign({ userId: user.user.id }, process.env.JWT_SECRET)
+  return user
+}
+
 const seedDatabase = async() => {
   // delete test data
-  await prisma.mutation.deleteManyPosts()
   await prisma.mutation.deleteManyComments()
+  await prisma.mutation.deleteManyPosts()
   await prisma.mutation.deleteManyUsers()
 
   // Create the Jen User
-  userOne.user = await prisma.mutation.createUser({
-    data: userOne.input
-  })
-  userOne.jwt = jwt.sign({ userId: userOne.user.id }, process.env.JWT_SECRET)
 
-  const postsCreated = await Promise.all(posts.map(post => {
+  await createUser(userOne)
+  await createUser(userTwo)
+
+  testPosts = await Promise.all(posts.map(post => {
     post.author = {
       connect: {id: userOne.user.id}
     }
     return prisma.mutation.createPost({
       data: { ...post}
-    }, '{id title}')
+    }, '{id title published}')
   }))
-  return postsCreated
 
+  comments[0].post = testPosts.filter(testPost => testPost.published)[0].id
+  comments[0].author = userTwo.user.id
+
+  comments[1].post = testPosts.filter(testPost => testPost.published)[0].id
+  comments[1].author = userOne.user.id
+
+  testComments = await Promise.all(comments.map(comment => {
+    return prisma.mutation.createComment({
+      data: {
+        ...comment,
+        author: {
+          connect: {
+            id: comment.author
+          }
+        },
+        post: {
+          connect: {
+            id: comment.post
+          }
+        }
+      }
+    }, '{id text author { id } post { id } }')
+  }))
 }
 
-export { seedDatabase as default, userOne }
+export { seedDatabase as default, userOne, userTwo, testPosts, testComments }

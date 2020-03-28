@@ -3,7 +3,7 @@
 
 import 'cross-fetch/polyfill'
 import { getPosts, getMyPosts, updatePost, deletePost, createPost } from './utils/operations'
-import seedDatabase, { userOne } from './utils/seedDatabase'
+import seedDatabase, { userOne, testPosts } from './utils/seedDatabase'
 import getClient from './utils/getClient'
 import prisma from '../src/prisma'
 
@@ -12,7 +12,8 @@ let posts = []
 let authClient = undefined
 
 beforeEach(async() => {
-  posts = await seedDatabase()
+  await seedDatabase()
+  posts = testPosts
   authClient = getClient(userOne.jwt)
 })
 
