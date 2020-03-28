@@ -2,7 +2,7 @@
 /* eslint-env jest */
 
 import 'cross-fetch/polyfill'
-import { getPosts, getMyPosts, updatePost, deletePost, createPost } from './utils/operations'
+import { getPosts, getMyPosts, updatePost, deletePost, createPost, subscribeToPosts } from './utils/operations'
 import seedDatabase, { userOne, testPosts } from './utils/seedDatabase'
 import getClient from './utils/getClient'
 import prisma from '../src/prisma'
@@ -66,4 +66,22 @@ test('Should delete the second post', async() => {
   expect(data.deletePost.id).toBe(posts[1].id)
   const notExists = await prisma.exists.Post({ id: posts[1].id })
   expect(notExists).toBe(false)
+})
+
+test('Should listen to post subscription', async(done) => {
+  authClient.subscribe({ query: subscribeToPosts }).subscribe({
+    next(response) {
+      expect(response.data.post.mutation).toBe('UPDATED')
+      done()
+    }
+  })
+
+  await prisma.mutation.updatePost({
+    where: {
+      id: testPosts.filter(post => post.published)[0].id
+    },
+    data: {
+      title: 'Updated title for test post'
+    }
+  })
 })
